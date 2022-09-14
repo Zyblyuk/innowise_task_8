@@ -11,6 +11,8 @@ import os
 import shutil
 import logging
 
+logging.basicConfig(level=logging.INFO)
+
 aws_access_key_id = Variable.get('aws_access_key_id')
 aws_secret_access_key = Variable.get('aws_secret_access_key')
 region_name = Variable.get('region_name')
@@ -65,8 +67,7 @@ def get_client(service: str) -> client:
         service,
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
-        region_name=region_name,
-        endpoint_url=endpoint_url
+        region_name=region_name
     )
 
 
@@ -76,8 +77,7 @@ def get_resource(service: str) -> resources:
         service,
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
-        region_name=region_name,
-        endpoint_url=endpoint_url
+        region_name=region_name
     )
 
 

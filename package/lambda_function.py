@@ -7,6 +7,8 @@ from boto3 import resources
 import logging
 from decouple import config
 
+logging.basicConfig(level=logging.INFO)
+
 aws_access_key_id = config('aws_access_key_id')
 aws_secret_access_key = config('aws_secret_access_key')
 region_name = config('region_name')
