@@ -28,6 +28,7 @@ lambda_package_pash = Variable.get('lambda_package_pash')
 
 
 def create_count_csv(month: str) -> bool:
+    """Create count file csv"""
     spark = SparkSession \
         .builder \
         .master("local[1]") \
@@ -59,6 +60,7 @@ def create_count_csv(month: str) -> bool:
 
 
 def get_client(service: str) -> client:
+    """Get boto3 client"""
     return boto3.client(
         service,
         aws_access_key_id=aws_access_key_id,
@@ -69,6 +71,7 @@ def get_client(service: str) -> client:
 
 
 def get_resource(service: str) -> resources:
+    """Get boto3 resources"""
     return boto3.resource(
         service,
         aws_access_key_id=aws_access_key_id,
@@ -79,6 +82,7 @@ def get_resource(service: str) -> resources:
 
 
 def to_bucket(path: str, key=None) -> bool:
+    """csv file to bucket"""
     if key is None:
         key = path.split("/")[-1]
 
@@ -92,6 +96,7 @@ def to_bucket(path: str, key=None) -> bool:
 
 
 def create_table(table_name: str) -> bool:
+    """Create dynamodb table"""
     dynamodb = get_resource('dynamodb')
 
     params = {
@@ -134,6 +139,7 @@ def create_table(table_name: str) -> bool:
 
 
 def create_bucket() -> bool:
+    """Create bucket"""
     try:
         get_resource("s3")\
             .create_bucket(
@@ -158,6 +164,7 @@ def create_bucket() -> bool:
 
 
 def create_lambda() -> bool:
+    """Create lambda"""
     lambda_client = get_client("lambda")
 
     def create() -> bool:
@@ -190,6 +197,7 @@ def create_lambda() -> bool:
 
 
 def delete_lambda() -> bool:
+    """Delete lambda"""
     lambda_client = get_client("lambda")
     lambda_client.delete_function(
         FunctionName=lambda_name
@@ -199,6 +207,7 @@ def delete_lambda() -> bool:
 
 
 def add_trigger() -> bool:
+    """Add trigger to lambda"""
     get_client("s3").put_bucket_notification_configuration(
         Bucket=bucket_name,
         NotificationConfiguration={
@@ -215,6 +224,7 @@ def add_trigger() -> bool:
 
 
 def create_queue() -> bool:
+    """Create queue"""
     sqs_client = get_client("sqs")
     sqs_client.create_queue(
         QueueName=queue_name,
@@ -228,12 +238,14 @@ def create_queue() -> bool:
 
 
 def create_all_table():
+    """Create table data_month, count_month, agv_month"""
     create_table("data_month")
     create_table("count_month")
     create_table("agv_month")
 
 
 def all_to_bucket():
+    """All file to bucket"""
     for filename in os.listdir(csv_path):
         logging.info(f"Add {filename} to s3:")
         to_bucket("task8", f"{csv_path}/{filename}")
