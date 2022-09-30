@@ -1,22 +1,8 @@
 import os
 import shutil
+import calendar
 from pyspark.sql import SparkSession, functions as F
 
-
-months = {
-    1: "january",
-    2: "february",
-    3: "march",
-    4: "april",
-    5: "may",
-    6: "june",
-    7: "july",
-    8: "august",
-    9: "september",
-    10: "october",
-    11: "november",
-    12: "december",
-}
 
 spark = SparkSession\
     .builder\
@@ -30,12 +16,12 @@ data = spark.read.format("csv") \
 
 data.departure = data.select(F.to_timestamp("departure"))
 
-for i in months:
-    print(months[i])
+months = [i.lower() for i in calendar.month_name if i != '']
 
-    data.where(F.month("departure") == i) \
-        .write.csv(f"csv/month/{months[i]}")
 
-    os.system(f"cat csv/month/{months[i]}/p* > csv/month/{months[i]}.csv")
-    shutil.rmtree(f"csv/month/{months[i]}")
-    print("Done!!!\n")
+for idx, month in enumerate(months):
+    data.where(F.month("departure") == idx) \
+        .write.csv(f"csv/month/{month}")
+
+    os.system(f"cat csv/month/{month}/p* > csv/month/{month}.csv")
+    shutil.rmtree(f"csv/month/{month}")
